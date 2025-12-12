@@ -16,6 +16,7 @@
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
+from collections import deque
 
 import util
 from game import Directions
@@ -105,8 +106,26 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     util.raiseNotDefined() #hàm throw lỗi với thông tin debug chi tiết khi một phương thức chưa được implement
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+
+    visited = set()
+    startState = problem.getStartState()
+    path = []
+    queue = deque()
+    queue.append((startState, path))
+    visited.add(startState)
+
+    while queue:
+        state, path = queue.popleft()
+
+        if problem.isGoalState(state):
+            return path
+
+        for nextState, action, cost in problem.getSuccessors(state):
+            if nextState not in visited:
+                visited.add(nextState)
+                newPath = path + [action]
+                queue.append((nextState, newPath))
+    return []
     util.raiseNotDefined()
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
