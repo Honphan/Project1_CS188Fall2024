@@ -31,7 +31,7 @@ class SearchProblem:
 
     def getStartState(self):
         """
-        Returns the start state for the search problem.
+            Returns the start state for the search problem.
         """
         util.raiseNotDefined()
 
@@ -76,21 +76,27 @@ def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
-    """
-    Search the deepest nodes in the search tree first.
+    #Đầu tiên lấy ra vị trí bắt đầu của đối tượng problem
+    startState = problem.getStartState()
+    stack = util.Stack()
+    path = []
+    stack.push((startState, path))
+    visited = set()
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
+    while not stack.isEmpty():
+        state, path = stack.pop()
+        if state in visited:
+            continue
+        visited.add(state)
+        if problem.isGoalState(state):
+            return path
+        for nextState, action, cost in problem.getSuccessors(state):
+            if nextState not in visited:
+                newPath = path + [action]
+                stack.push((nextState, newPath))
+    return []
 
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    util.raiseNotDefined() #hàm throw lỗi với thông tin debug chi tiết khi một phương thức chưa được implement
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
