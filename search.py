@@ -22,6 +22,9 @@ import util
 from game import Directions
 from typing import List
 
+from util import Queue
+
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -110,12 +113,12 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     visited = set()
     startState = problem.getStartState()
     path = []
-    queue = deque()
-    queue.append((startState, path))
+    queue = Queue()
+    queue.push((startState, path))
     visited.add(startState)
 
     while queue:
-        state, path = queue.popleft()
+        state, path = queue.pop()
 
         if problem.isGoalState(state):
             return path
@@ -124,7 +127,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
             if nextState not in visited:
                 visited.add(nextState)
                 newPath = path + [action]
-                queue.append((nextState, newPath))
+                queue.push((nextState, newPath))
     return []
     util.raiseNotDefined()
 
