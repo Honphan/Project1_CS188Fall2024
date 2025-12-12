@@ -76,20 +76,26 @@ def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
-    #Đầu tiên lấy ra vị trí bắt đầu của đối tượng problem
+    #Đầu tiên lấy ra vị trí bắt đầu của đối tượng problem và tạo Stack rỗng để chứa các node đã thăm
     startState = problem.getStartState()
     stack = util.Stack()
     path = []
+    #Đẩy trạng thái đầu tiên và đường đi vào stack
     stack.push((startState, path))
     visited = set()
 
+    #Kiểm tra stack, nếu không rỗng thì lấy trạng thái tiếp theo và path hiện tại
     while not stack.isEmpty():
         state, path = stack.pop()
+        #Nếu state này đã thăm thì quay lại vòng lặp từ đầu
         if state in visited:
             continue
+        #Nếu chưa thăm thì thêm vào visited
         visited.add(state)
+        #Nếu this state là trạng thái Goal mong muốn thì return về path
         if problem.isGoalState(state):
             return path
+        #Duyệt tiếp các state tiếp theo
         for nextState, action, cost in problem.getSuccessors(state):
             if nextState not in visited:
                 newPath = path + [action]
