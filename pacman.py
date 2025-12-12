@@ -629,6 +629,7 @@ def replayGame( layout, actions, display ):
 def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0, catchExceptions=False, timeout=30 ):
     import __main__
     __main__.__dict__['_display'] = display
+    print(ghosts)
 
     rules = ClassicGameRules(timeout)
     games = []
@@ -679,6 +680,7 @@ if __name__ == '__main__':
     """
     args = readCommand( sys.argv[1:] ) # Get game components based on input
     runGames( **args )
+
 
     # import cProfile
     # cProfile.run("runGames( **args )")
