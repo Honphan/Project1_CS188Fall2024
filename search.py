@@ -20,6 +20,7 @@ Pacman agents (in searchAgents.py).
 import util
 from game import Directions
 from typing import List
+import csv
 
 class SearchProblem:
     """
@@ -90,10 +91,10 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    print(problem)
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    # print(problem)
+    # print("Start:", problem.getStartState())
+    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
     # dùng để chạy thuật toán DFS theo LIFO
     stack = util.Stack()
@@ -102,7 +103,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     start_state = problem.getStartState()
 
     # trạng thái bắt đầu vào Stack: (trạng thái, [hành động],cost)
-    stack.push((start_state, [],0))
+    stack.push((start_state, [], 0))
 
     # lưu trạng thái đã đi
     explored_states = set()
@@ -127,7 +128,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
                     # thêm action vao list cur_action : cộng 2 list
                     new_actions = cur_actions + [action]
                     new_cost = cur_cost + cost
-                    stack.push((successor_state, new_actions,new_cost))
+                    stack.push((successor_state, new_actions, new_cost))
 
     return []
 
@@ -142,11 +143,26 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     # trạng thái bắt đầu ((trạng thái, [hành động],cost))
     queue.push((problem.getStartState(), [],0))
 
+    # Ghi các bước chạy vào file csv
+    with open('log_q5.csv', mode='a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        # Đặt tên cột
+        writer.writerow(['Step', 'CurrState ', 'Cost', 'Path'])
+
+    # Chỉ số bước chạy
+    step_count = 0
     # chạy đến khi queue trống
     while not queue.isEmpty():
 
-        # xóa phẩn tử dưới cùng của queue
+        # lấy và xóa phẩn tử dưới cùng của queue
         current_state, cur_actions, cur_cost= queue.pop()
+
+        # Ghi ra file
+        step_count += 1
+        # Mở file và nối dữ liệu vào
+        with open('log_q5.csv', mode='a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow([step_count, str(current_state), cur_cost, str(cur_actions)])
 
         # nếu nó là goal thì trả về tất cả các bước đã thực hiện để chương trình chạy game
         if problem.isGoalState(current_state):
