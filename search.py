@@ -164,10 +164,30 @@ def nullHeuristic(state, problem=None) -> float:
     return 0
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    openSet = util.PriorityQueue()
+    #closedSet = set() //Ở trường hợp A* này thì khi mình đã duyệt qua state nào đó thì chưa chắc đã là đường đi tối ưu
+    #nên nếu sử dụng closedSet thì các node đã duyệt không bao giờ được duyệt lại để lấy đường đi tối ưu nữa./
+    startState = problem.getStartState()
+    gScore = {startState: 0} #Dòng này có nghĩa là để chỉ chi phi từ node đầu tiên đến vị trị startState. Hiện tại đang là bằng 0./
+    path = []
+    openSet.push((startState, path), heuristic(startState, problem))
 
+    while not openSet.isEmpty():
+        state, path = openSet.pop()
+
+        if problem.isGoalState(state):
+            return path
+        if gScore[state] + heuristic(state, problem) < 0:
+            continue
+
+        for nextState, action, stepCost in problem.getSuccessors(state):
+            newCost = stepCost + gScore[state]
+            newPath = path + [action]
+            if nextState not in gScore or newCost < gScore[nextState]:
+                gScore[nextState] = newCost
+                f = gScore[nextState] + heuristic(nextState, problem)
+                openSet.push((nextState, newPath), f)
+    return []
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
