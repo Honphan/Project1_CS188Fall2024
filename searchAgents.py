@@ -295,7 +295,14 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
+        startingPosition = self.startingPosition
+        visitedConers = (False, False, False, False)
+        for index, corner in enumerate(self.corners):
+            # enumrate lấy ra các chỉ số và giá trị trong self.corners
+            # Ví dụ: 0: (1;1) 1: (1;top) 2: (right;1) 3: (right;top)
+            if startingPosition == corner:
+                visitedConers[index] = True
+        return (startingPosition, visitedConers)
         util.raiseNotDefined()
 
     def isGoalState(self, state: Any):
