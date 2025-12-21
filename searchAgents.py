@@ -33,7 +33,7 @@ description for details.
 
 Good luck and happy searching!
 """
-
+import math
 from typing import List, Tuple, Any
 from game import Directions
 from game import Agent
@@ -296,34 +296,27 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         startingPosition = self.startingPosition
-        visitedConers = (False, False, False, False)
+        visitedCorners = [False, False, False, False]
         for index, corner in enumerate(self.corners):
             # enumrate lấy ra các chỉ số và giá trị trong self.corners
             # Ví dụ: 0: (1;1) 1: (1;top) 2: (right;1) 3: (right;top)
             if startingPosition == corner:
-                visitedConers[index] = True
-        return (startingPosition, visitedConers)
+                visitedCorners[index] = True
+        return (startingPosition, tuple(visitedCorners))
         util.raiseNotDefined()
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
+        _, visitedCorners = state #lấy ra kết quả hiện tại visitedCorners của current state
+        return all(visitedCorners) # nếu tất cả các phần tử trong visitedCorners đều True thì return True
         util.raiseNotDefined()
 
     def getSuccessors(self, state: Any):
-        """
-        Returns successor states, the actions they require, and a cost of 1.
-
-         As noted in search.py:
-            For a given state, this should return a list of triples, (successor,
-            action, stepCost), where 'successor' is a successor to the current
-            state, 'action' is the action required to get there, and 'stepCost'
-            is the incremental cost of expanding to that successor
-        """
 
         successors = []
+        ((x, y), visitedCorners) = state
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
@@ -332,8 +325,18 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
 
+            (dx, dy) = Actions.directionToVector(action)
+            (next_x, next_y) = (int(x + dx), int(y + dy))
+            hitsWall = self.walls[next_x][next_y]
+
+            if not hitsWall: #neu khong dam tuong thi di
+                nextPosition = (next_x, next_y)
+                newVisited = list(visitedCorners) #cap nhat cac goc da di qua
+                for index, corner in enumerate(self.corners):
+                    if nextPosition == corner:
+                        newVisited[index] = True
+                successors.append(((nextPosition, tuple(newVisited)), action, 1))
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
@@ -369,8 +372,25 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    # lấy ra vị trí hiện tại của state và ds các góc đã/chưa thăm
+    position, visitedCorners = state
+    unvisited = []
+    for i in range(4):
+        if not visitedCorners[i]:
+            unvisited.append(corners[i])
 
+    heuristic = 0
+    while unvisited:
+        distances = []
+        for corner in unvisited:
+            distances.append((abs(corner[0]-position[0]) + abs(corner[1]-position[1]), corner))
+
+        minDistance, closestCorner = min(distances)
+        heuristic += minDistance
+        position = closestCorner
+        unvisited.remove(closestCorner)
+    return heuristic
+    return 0 # Default to trivial solution
 
 
 class AStarCornersAgent(SearchAgent):

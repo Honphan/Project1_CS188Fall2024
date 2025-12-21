@@ -117,7 +117,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     queue.push((startState, path))
     visited.add(startState)
 
-    while queue:
+    while not queue.isEmpty():
         state, path = queue.pop()
 
         if problem.isGoalState(state):
