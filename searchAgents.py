@@ -295,6 +295,7 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
+        "*** YOUR CODE HERE ***"
         startingPosition = self.startingPosition
         visitedCorners = [False, False, False, False]
         for index, corner in enumerate(self.corners):
@@ -309,6 +310,7 @@ class CornersProblem(search.SearchProblem):
         """
         Returns whether this search state is a goal state of the problem.
         """
+        "*** YOUR CODE HERE ***"
         _, visitedCorners = state #lấy ra kết quả hiện tại visitedCorners của current state
         return all(visitedCorners) # nếu tất cả các phần tử trong visitedCorners đều True thì return True
         util.raiseNotDefined()
@@ -324,7 +326,7 @@ class CornersProblem(search.SearchProblem):
             #   dx, dy = Actions.directionToVector(action)
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
-
+            "*** YOUR CODE HERE ***"
 
             (dx, dy) = Actions.directionToVector(action)
             (next_x, next_y) = (int(x + dx), int(y + dy))
