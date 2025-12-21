@@ -482,7 +482,21 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+
+    foodList = foodGrid.asList()
+
+    if not foodList:
+        return 0
+    if 'mazeDistances' not in problem.heuristicInfo:
+        problem.heuristicInfo['mazeDistances'] = {}
+    mazeDistances = problem.heuristicInfo['mazeDistances']
+    maxDistance = 0
+    for food in foodList:
+        key = (position, food)
+        if key not in mazeDistances:
+            mazeDistances[key] = mazeDistance(position, food, problem.startingGameState)
+        maxDistance = max(maxDistance, mazeDistances[key])
+    return maxDistance
 
 
 class ClosestDotSearchAgent(SearchAgent):
