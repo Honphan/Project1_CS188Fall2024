@@ -16,10 +16,14 @@
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
+from collections import deque
 
 import util
 from game import Directions
 from typing import List
+
+from util import Queue
+
 
 class SearchProblem:
     """
@@ -31,7 +35,7 @@ class SearchProblem:
 
     def getStartState(self):
         """
-        Returns the start state for the search problem.
+            Returns the start state for the search problem.
         """
         util.raiseNotDefined()
 
@@ -76,30 +80,80 @@ def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
-    """
-    Search the deepest nodes in the search tree first.
+    #Đầu tiên lấy ra vị trí bắt đầu của đối tượng problem và tạo Stack rỗng để chứa các node đã thăm
+    startState = problem.getStartState()
+    stack = util.Stack()
+    path = []
+    #Đẩy trạng thái đầu tiên và đường đi vào stack
+    stack.push((startState, path))
+    visited = set()
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
+    #Kiểm tra stack, nếu không rỗng thì lấy trạng thái tiếp theo và path hiện tại
+    while not stack.isEmpty():
+        state, path = stack.pop()
+        #Nếu state này đã thăm thì quay lại vòng lặp từ đầu
+        if state in visited:
+            continue
+        #Nếu chưa thăm thì thêm vào visited
+        visited.add(state)
+        #Nếu this state là trạng thái Goal mong muốn thì return về path
+        if problem.isGoalState(state):
+            return path
+        #Duyệt tiếp các state tiếp theo
+        for nextState, action, cost in problem.getSuccessors(state):
+            if nextState not in visited:
+                newPath = path + [action]
+                stack.push((nextState, newPath))
+    return []
 
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    util.raiseNotDefined() #hàm throw lỗi với thông tin debug chi tiết khi một phương thức chưa được implement
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+
+    visited = set()
+    startState = problem.getStartState()
+    path = []
+    queue = Queue()
+    queue.push((startState, path))
+    visited.add(startState)
+
+    while not queue.isEmpty():
+        state, path = queue.pop()
+
+        if problem.isGoalState(state):
+            return path
+
+        for nextState, action, cost in problem.getSuccessors(state):
+            if nextState not in visited:
+                visited.add(nextState)
+                newPath = path + [action]
+                queue.push((nextState, newPath))
+    return []
     util.raiseNotDefined()
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+    visited = set()
+    startState = problem.getStartState()
+    path = []
+    priorityQueue = util.PriorityQueue()
+    priorityQueue.push((startState, path, 0), 0)
+
+    while not priorityQueue.isEmpty():
+        state, path, currentCost = priorityQueue.pop()
+
+        if state in visited:
+            continue
+
+        if problem.isGoalState(state):
+            return path
+        visited.add(state)
+        for nextState, action, cost in problem.getSuccessors(state):
+            if nextState not in visited:
+
+                newCost = cost + currentCost
+                newPath = path + [action]
+                priorityQueue.push((nextState, newPath, newCost), newCost)
+    return []
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None) -> float:
@@ -110,10 +164,30 @@ def nullHeuristic(state, problem=None) -> float:
     return 0
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    openSet = util.PriorityQueue()
+    #closedSet = set() //Ở trường hợp A* này thì khi mình đã duyệt qua state nào đó thì chưa chắc đã là đường đi tối ưu
+    #nên nếu sử dụng closedSet thì các node đã duyệt không bao giờ được duyệt lại để lấy đường đi tối ưu nữa./
+    startState = problem.getStartState()
+    gScore = {startState: 0} #Dòng này có nghĩa là để chỉ chi phi từ node đầu tiên đến vị trị startState. Hiện tại đang là bằng 0./
+    path = []
+    openSet.push((startState, path), heuristic(startState, problem))
 
+    while not openSet.isEmpty():
+        state, path = openSet.pop()
+
+        if problem.isGoalState(state):
+            return path
+        if gScore[state] + heuristic(state, problem) < 0:
+            continue
+
+        for nextState, action, stepCost in problem.getSuccessors(state):
+            newCost = stepCost + gScore[state]
+            newPath = path + [action]
+            if nextState not in gScore or newCost < gScore[nextState]:
+                gScore[nextState] = newCost
+                f = gScore[nextState] + heuristic(nextState, problem)
+                openSet.push((nextState, newPath), f)
+    return []
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch

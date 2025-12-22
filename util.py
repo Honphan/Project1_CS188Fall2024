@@ -167,16 +167,11 @@ class Queue:
         "Returns true if the queue is empty"
         return len(self.list) == 0
 
+
 class PriorityQueue:
-    """
-      Implements a priority queue data structure. Each inserted item
-      has a priority associated with it and the client is usually interested
-      in quick retrieval of the lowest-priority item in the queue. This
-      data structure allows O(1) access to the lowest-priority item.
-    """
-    def  __init__(self):
-        self.heap = []
-        self.count = 0
+    def __init__(self):
+        self.heap = []  # Dùng heap (cây nhị phân)
+        self.count = 0  # Để phá vỡ tie-break
 
     def push(self, item, priority):
         entry = (priority, self.count, item)
@@ -185,24 +180,23 @@ class PriorityQueue:
 
     def pop(self):
         (_, _, item) = heapq.heappop(self.heap)
-        return item
+        return item  # Trả về item có priority thấp nhất
 
     def isEmpty(self):
         return len(self.heap) == 0
 
     def update(self, item, priority):
-        # If item already in priority queue with higher priority, update its priority and rebuild the heap.
-        # If item already in priority queue with equal or lower priority, do nothing.
-        # If item not in priority queue, do the same thing as self.push.
+        # Cập nhật priority nếu thấp hơn
         for index, (p, c, i) in enumerate(self.heap):
             if i == item:
-                if p <= priority:
+                if p <= priority:  # Priority cũ đã tốt hơn
                     break
+                # Xóa và thêm lại với priority mới
                 del self.heap[index]
                 self.heap.append((priority, c, item))
-                heapq.heapify(self.heap)
+                heapq.heapify(self.heap)  # Tái cân bằng heap
                 break
-        else:
+        else:  # Không tìm thấy, thêm mới
             self.push(item, priority)
 
 class PriorityQueueWithFunction(PriorityQueue):
